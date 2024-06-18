@@ -33,4 +33,4 @@ jobs:
         OWNER_NAME=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
         IMAGE_NAME=ghcr.io/$OWNER_NAME/$REPO_NAME/keycloak:$(date +%s)
-        docker buildx build --platform linux/arm64 -t $IMAGE_NAME --push ./keycloak/operator
+        docker buildx build --platform linux/arm64 -t $IMAGE_NAME --push ./operator

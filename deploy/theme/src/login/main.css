@@ -287,15 +287,18 @@ form > div {
     margin-bottom: 18px;
 }
 
-div:has(> input[type="password"]) {
+/* Password field: `src/login/PasswordField.tsx` owns the wrapper and the toggle, so these are real
+ * class names — no `:has()`, no guessing at empty `kcClsx()` classes, and the eye/hide glyph is an
+ * inline SVG whose state comes from React rather than from the input's type attribute. */
+.pi-password {
     position: relative;
 }
 
-div:has(> input[type="password"]) > input {
+.pi-password > input {
     padding-right: 48px;
 }
 
-div:has(> input[type="password"]) > button {
+.pi-password-toggle {
     position: absolute;
     top: 50%;
     right: 6px;
@@ -303,44 +306,36 @@ div:has(> input[type="password"]) > button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     min-height: 0;
     padding: 0;
     color: var(--pi-muted);
     background: transparent;
     border: 0;
     box-shadow: none;
-    border-radius: 8px;
+    border-radius: 9px;
     cursor: pointer;
     transition:
         color 0.15s ease,
         background 0.15s ease;
 }
 
-div:has(> input[type="password"]) > button:hover {
+.pi-password-toggle:hover {
     color: var(--pi-text);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.07);
 }
 
-/* The <i> inside the reveal button also has an EMPTY class list, so `[class*="fa-eye"]` never
- * matches. The state is read from the input instead: Keycloakify toggles it password <-> text. */
-div:has(> input[type="password"]) > button i,
-#kc-form-login div:has(> input[type="text"]) > button i {
+.pi-password-toggle:focus-visible {
+    outline: none;
+    color: var(--pi-text);
+    box-shadow: 0 0 0 3px var(--pi-accent-soft);
+}
+
+.pi-password-toggle svg {
     display: block;
-    width: 18px;
-    height: 18px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 18px 18px;
-}
-
-div:has(> input[type="password"]) > button i {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a0ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z'/><circle cx='12' cy='12' r='3.2'/></svg>");
-}
-
-#kc-form-login div:has(> input[type="text"]) > button i {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a0ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3l18 18'/><path d='M10.6 6.1A9.9 9.9 0 0 1 12 6c6.6 0 10.2 6 10.2 6a17 17 0 0 1-2.4 3.1M6.3 7.8A17 17 0 0 0 1.8 12S5.4 18 12 18a10 10 0 0 0 4.2-.9'/><path d='M9.9 9.9a3.2 3.2 0 0 0 4.4 4.4'/></svg>");
+    width: 20px;
+    height: 20px;
 }
 
 /* The WebAuthn button is emitted unconditionally and revealed by Keycloakify's script only when a
@@ -401,6 +396,23 @@ button[type="submit"]:focus-visible,
     box-shadow:
         0 0 0 4px var(--pi-accent-soft),
         0 12px 24px -12px rgba(25, 118, 210, 0.95);
+}
+
+/* The "Cancel" of an app-initiated action is a submit button too, so it would inherit the primary
+ * styling; it has to read as secondary. */
+button[name="cancel-aia"] {
+    margin-top: 10px;
+    color: var(--pi-text);
+    background: var(--pi-surface-2);
+    border: 1px solid var(--pi-border);
+    box-shadow: none;
+}
+
+button[name="cancel-aia"]:hover {
+    filter: none;
+    background: #1b1f25;
+    border-color: var(--pi-border-strong);
+    box-shadow: none;
 }
 
 input[type="submit"][disabled],

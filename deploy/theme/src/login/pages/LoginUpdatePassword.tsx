@@ -1,9 +1,8 @@
 import { kcSanitize } from "keycloakify/lib/kcSanitize";
 import { getKcClsx, type KcClsx } from "keycloakify/login/lib/kcClsx";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
-import type { JSX } from "keycloakify/tools/JSX";
-import { useIsPasswordRevealed } from "keycloakify/tools/useIsPasswordRevealed";
 import type { I18n } from "../i18n";
+import { PasswordField } from "../PasswordField";
 import type { KcContext } from "../KcContext";
 
 export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, { pageId: "login-update-password.ftl" }>, I18n>) {
@@ -35,7 +34,7 @@ export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, 
                         </label>
                     </div>
                     <div className={kcClsx("kcInputWrapperClass")}>
-                        <PasswordWrapper kcClsx={kcClsx} i18n={i18n} passwordInputId="password-new">
+                        <PasswordField i18n={i18n} passwordInputId="password-new">
                             <input
                                 type="password"
                                 id="password-new"
@@ -45,7 +44,7 @@ export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, 
                                 autoComplete="new-password"
                                 aria-invalid={messagesPerField.existsError("password", "password-confirm")}
                             />
-                        </PasswordWrapper>
+                        </PasswordField>
 
                         {messagesPerField.existsError("password") && (
                             <span
@@ -67,7 +66,7 @@ export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, 
                         </label>
                     </div>
                     <div className={kcClsx("kcInputWrapperClass")}>
-                        <PasswordWrapper kcClsx={kcClsx} i18n={i18n} passwordInputId="password-confirm">
+                        <PasswordField i18n={i18n} passwordInputId="password-confirm">
                             <input
                                 type="password"
                                 id="password-confirm"
@@ -76,7 +75,7 @@ export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, 
                                 autoComplete="new-password"
                                 aria-invalid={messagesPerField.existsError("password", "password-confirm")}
                             />
-                        </PasswordWrapper>
+                        </PasswordField>
 
                         {messagesPerField.existsError("password-confirm") && (
                             <span
@@ -120,6 +119,9 @@ export default function LoginUpdatePassword(props: PageProps<Extract<KcContext, 
     );
 }
 
+// Kept from Keycloakify's own page: it renders the "sign out from other devices" checkbox, which
+// Keycloak's template pre-checks. Class names are empty (doUseDefaultCss={false}), so this is
+// styled structurally in main.css.
 function LogoutOtherSessions(props: { kcClsx: KcClsx; i18n: I18n }) {
     const { kcClsx, i18n } = props;
 
@@ -130,34 +132,11 @@ function LogoutOtherSessions(props: { kcClsx: KcClsx; i18n: I18n }) {
             <div className={kcClsx("kcFormOptionsWrapperClass")}>
                 <div className="checkbox">
                     <label>
-                        <input type="checkbox" id="logout-sessions" name="logout-sessions" value="on" />
+                        <input type="checkbox" id="logout-sessions" name="logout-sessions" value="on" defaultChecked />
                         {msg("logoutOtherSessions")}
                     </label>
                 </div>
             </div>
-        </div>
-    );
-}
-
-function PasswordWrapper(props: { kcClsx: KcClsx; i18n: I18n; passwordInputId: string; children: JSX.Element }) {
-    const { kcClsx, i18n, passwordInputId, children } = props;
-
-    const { msgStr } = i18n;
-
-    const { isPasswordRevealed, toggleIsPasswordRevealed } = useIsPasswordRevealed({ passwordInputId });
-
-    return (
-        <div className={kcClsx("kcInputGroup")}>
-            {children}
-            <button
-                type="button"
-                className={kcClsx("kcFormPasswordVisibilityButtonClass")}
-                aria-label={msgStr(isPasswordRevealed ? "hidePassword" : "showPassword")}
-                aria-controls={passwordInputId}
-                onClick={toggleIsPasswordRevealed}
-            >
-                <i className={kcClsx(isPasswordRevealed ? "kcFormPasswordVisibilityIconHide" : "kcFormPasswordVisibilityIconShow")} aria-hidden />
-            </button>
         </div>
     );
 }

@@ -1,0 +1,1 @@
+var e={dateStyle:`long`},t={timeStyle:`short`},n={...e,...t};function r(e,t=`en`,r=n){return e.toLocaleString(t,r)}export{r as n,e as t};

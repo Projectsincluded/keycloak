@@ -1,0 +1,1 @@
+<#include "./" + locale + "/verifiable-credential-offer.ftl">

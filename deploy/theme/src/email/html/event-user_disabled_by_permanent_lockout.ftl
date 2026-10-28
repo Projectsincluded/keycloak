@@ -1,0 +1,1 @@
+<#include "./" + locale + "/event-user_disabled_by_permanent_lockout.ftl">

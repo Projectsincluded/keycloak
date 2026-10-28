@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DilGLQJO.js";import{X as t,nt as n}from"./resolveAssetUrl-DwRRgrg5.js";var r=n(`loader-circle`,[[`path`,{d:`M21 12a9 9 0 1 1-6.219-8.56`,key:`13zald`}]]),i=e();function a({className:e,...n}){return(0,i.jsx)(r,{"data-slot":`spinner`,role:`status`,"aria-label":`Loading`,className:t(`size-4 animate-spin`,e),...n})}export{r as n,a as t};

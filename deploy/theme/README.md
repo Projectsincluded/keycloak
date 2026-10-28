@@ -1,58 +1,45 @@
-<p align="center">
-    <i>🚀 <a href="https://keycloakify.dev">Keycloakify</a> v11 starter 🚀</i>
-    <br/>
-    <br/>
-</p>
+# `deploy/theme/` — the theme, as plain files
 
-# Quick start
+`src/` is a **complete Keycloak theme** (`login` + `account` + `email`), unpacked from a
+Keycloakify-built JAR on 2026-10-28. It is copied into the image at
+`/opt/keycloak/themes/projectsincluded-theme/`, which Keycloak reads at request time — no provider
+JAR, no build step, every page diffable in Git.
 
-```bash
-git clone https://github.com/keycloakify/keycloakify-starter
-cd keycloakify-starter
-yarn install # Or use an other package manager, just be sure to delete the yarn.lock if you use another package manager.
-```
+## Provenance
 
-# Testing the theme locally
+| | |
+| --- | --- |
+| theme name | `projectsincluded-theme` |
+| types | `login`, `account`, `email` |
+| built with | Keycloakify `11.16.1`, theme version `250004.0.23` |
+| source JAR | `projectsincluded-theme.jar`, 9 517 375 B, sha256 `d7015ea7f0e2f4598c3a3f12f94db133…` |
+| design | two-column shadcn layout: card left, branded panel right, toolbar (home, colour scheme, language) |
+| branding | driven by `SHADCN_THEME_*` env vars in `src/login/theme.properties`, e.g. `SHADCN_THEME_PRIMARY`, `SHADCN_THEME_LAYOUT`, `SHADCN_THEME_SIDE_PANEL_IMAGE_URL` |
 
-[Documentation](https://docs.keycloakify.dev/testing-your-theme)
+**The Keycloakify *source* project for this theme is not in this repository**, so it cannot be
+rebuilt here; these files are the artefact of record. The previous hand-built theme (the dark
+single-card design with `SocialProviders.tsx` / `PasswordField.tsx`) was removed in the same commit;
+its source still lives in `keycloakify-starter/` in the workspace and in this repo's history
+(`236643c`, `024d8ad`, `c8c5532`), and its built JARs remain in GHCR as `26.8.1-pi.3`…`pi.6`.
 
-# How to customize the theme
+## Updating it
 
-[Documentation](https://docs.keycloakify.dev/css-customization)
+1. Rebuild the theme from its source project (`yarn build-keycloak-theme`).
+2. Replace `src/` with the theme tree from the new JAR — it is the `theme/<name>/` directory, i.e.
+   `login/`, `account/`, `email/`:
+   ```bash
+   rm -rf deploy/theme/src && mkdir -p deploy/theme/src
+   unzip -q /path/to/new.jar 'theme/projectsincluded-theme/*' -d /tmp/new
+   cp -a /tmp/new/theme/projectsincluded-theme/. deploy/theme/src/
+   ```
+3. Update the sha256 and version in this file, then commit. CI publishes a new
+   `<keycloak-version>-pi.<run>` tag — never reuse an old tag.
 
-# Building the theme
+## Notes
 
-You need to have [Maven](https://maven.apache.org/) installed to build the theme (Maven >= 3.1.1, Java >= 7).  
-The `mvn` command must be in the $PATH.
-
--   On macOS: `brew install maven`
--   On Debian/Ubuntu: `sudo apt-get install maven`
--   On Windows: `choco install openjdk` and `choco install maven` (Or download from [here](https://maven.apache.org/download.cgi))
-
-```bash
-npm run build-keycloak-theme
-```
-
-Note that by default Keycloakify generates multiple .jar files for different versions of Keycloak.  
-You can customize this behavior, see documentation [here](https://docs.keycloakify.dev/features/compiler-options/keycloakversiontargets).
-
-# Initializing the account theme
-
-```bash
-npx keycloakify initialize-account-theme
-```
-
-# Initializing the email theme
-
-```bash
-npx keycloakify initialize-email-theme
-```
-
-# GitHub Actions
-
-The starter comes with a generic GitHub Actions workflow that builds the theme and publishes
-the jars [as GitHub releases artifacts](https://github.com/keycloakify/keycloakify-starter/releases/tag/v10.0.0).  
-To release a new version **just update the `package.json` version and push**.
-
-To enable the workflow go to your fork of this repository on GitHub then navigate to:
-`Settings` > `Actions` > `Workflow permissions`, select `Read and write permissions`.
+- `src/login/theme.properties` sets `parent=keycloak` and points at `%BASE_URL%/logo.png` for the
+  default logo; the shipped tree has **no** `logo.png` at the theme root, so the card header logo is
+  absent and the side panel uses the bundled `assets/logo-*.svg`. To brand the card, set
+  `SHADCN_THEME_LOGO_URL` (and `…_DARK_URL`) in the Deployment's env.
+- The JAR also carried top-level `theme/login/` and `theme/account/` *directory* entries with no
+  files; they are not part of `src/` and would be meaningless here.

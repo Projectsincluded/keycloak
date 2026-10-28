@@ -1,0 +1,1 @@
+<#include "./" + locale + "/event-remove_credential.ftl">

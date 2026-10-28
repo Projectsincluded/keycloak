@@ -1,0 +1,1 @@
+<#include "./" + locale + "/event-update_password.ftl">

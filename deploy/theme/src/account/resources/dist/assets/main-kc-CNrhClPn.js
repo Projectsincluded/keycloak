@@ -1,0 +1,1 @@
+import{i as e}from"./rolldown-runtime-aKtaBQYM.js";import{n as t,t as n}from"./jsx-runtime-DilGLQJO.js";import{i as r,t as i}from"./kc.gen-DbaRCbri.js";var a=e(t(),1),o=r(),s=n();if(!window.kcContext)throw Error(`No Keycloak context`);(0,o.createRoot)(document.getElementById(`root`)).render((0,s.jsx)(a.StrictMode,{children:(0,s.jsx)(i,{kcContext:window.kcContext})}));

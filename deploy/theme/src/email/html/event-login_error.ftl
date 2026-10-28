@@ -1,0 +1,1 @@
+<#include "./" + locale + "/event-login_error.ftl">

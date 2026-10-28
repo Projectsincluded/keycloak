@@ -1,0 +1,1 @@
+import{Ct as e,T as t,wt as n}from"./queries-BacIqdT_.js";import{n as r}from"./toast-BGJkWy1a.js";function i(i,a,o){let s=n(o)??``,c=i(a,{error:s}),l=(o instanceof t?o.description:e(o))||(c.includes(s)?void 0:s);r.add({title:c,description:l,type:`error`})}export{i as t};

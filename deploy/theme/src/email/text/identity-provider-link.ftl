@@ -1,0 +1,1 @@
+<#include "./" + locale + "/identity-provider-link.ftl">

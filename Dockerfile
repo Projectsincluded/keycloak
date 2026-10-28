@@ -78,6 +78,12 @@ WORKDIR /opt/keycloak
 COPY --from=theme /theme/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar \
                   /opt/keycloak/providers/pi-theme.jar
 
+# A second, self-contained theme shipped as a prebuilt JAR: two-column shadcn layout with a branded
+# side panel, and it also covers the account and email theme types. Vendored because its source is
+# not in this repo — see deploy/theme-prebuilt/README.md. Like the JAR above it must be in place
+# BEFORE `kc.sh build`, or the container refuses to start (§48a).
+COPY deploy/theme-prebuilt/projectsincluded-theme.jar /opt/keycloak/providers/projectsincluded-theme.jar
+
 # MUST come after the COPY above — this is the step that registers the JAR in the optimized build.
 RUN /opt/keycloak/bin/kc.sh build
 

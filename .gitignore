@@ -50,6 +50,9 @@ nbproject
 *.gz
 *.iso
 *.jar
+# ...except the vendored theme artefact: its source is not in this repo, so the JAR IS the artefact
+# of record. See deploy/theme-prebuilt/README.md.
+!deploy/theme-prebuilt/*.jar
 *.rar
 *.tar
 *.zip

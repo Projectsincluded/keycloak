@@ -3,6 +3,16 @@
         padding: 0;
     }
 
+    /* Storybook mounts stories into #storybook-root, while main.css styles the app root as #root
+       (the Vite entry in src/main.tsx). Without this the shell shrink-wraps and the card renders
+       left-aligned and narrow — a preview artefact, not a theme bug. Mirrors the #root rule. */
+    #storybook-root {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     /* Following styles are just meant to avoid white flash when switching from one story to another */
     @keyframes fadeToTransparent {
         from {

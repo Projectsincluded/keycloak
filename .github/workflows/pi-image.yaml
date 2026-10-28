@@ -1,0 +1,72 @@
+name: pi-image
+
+# Builds the Keycloak image that carries our login theme and publishes it to GHCR.
+#
+# WHY THERE IS NO pull_request TRIGGER
+#   This repository is an upstream Keycloak fork, and 17 of its 20 workflows listen for
+#   `pull_request` (its ci.yml, codeql, operator-ci, stability suites...). Opening a PR here runs
+#   all of Keycloak's own pipelines. Upstream's workflows deliberately ignore pushes to `main`, so
+#   work is pushed to `main` directly and only this workflow runs. If a change ever does need
+#   review, open the PR knowing it will start Keycloak's full CI.
+#
+# WHY THE TAG IS NOT JUST THE VERSION
+#   `26.8.1` is a *moving* name if it is rebuilt: republishing it under the same tag changes what a
+#   running pod would pull on its next restart, which is exactly what a pinned tag exists to
+#   prevent. So every build gets `<keycloak-version>-pi.<run number>`: readable (you can see which
+#   Keycloak release it is) and immutable (the run number only ever goes up).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "deploy/**"
+      - ".github/workflows/pi-image.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # arm64 runs emulated under QEMU. Only `kc.sh build` executes code in the Keycloak stages,
+      # which takes seconds natively and a few minutes emulated.
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - uses: docker/setup-buildx-action@v3
+
+      # The Dockerfile's FROM line is the single source of truth for the Keycloak version.
+      - name: read the Keycloak version from the Dockerfile
+        id: ver
+        run: |
+          v=$(grep -m1 '^FROM quay.io/keycloak/keycloak:' Dockerfile \
+              | sed 's/.*keycloak://' | awk '{print $1}')
+          test -n "$v" || { echo "could not read the version from the Dockerfile"; exit 1; }
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "keycloak $v -> $IMAGE:$v-pi.${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.ver.outputs.version }}-pi.${{ github.run_number }}
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.ver.outputs.version }}-pi.${{ github.run_number }}

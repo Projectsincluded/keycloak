@@ -1,0 +1,414 @@
+/*
+ * Projectsincluded login theme.
+ *
+ * Self-contained on purpose: `doUseDefaultCss={false}` in KcPage.tsx means Keycloakify's
+ * PatternFly stylesheet is NOT loaded, so nothing here fights an inherited framework and the
+ * bundle stays small. That also means every rule below has to cover its element itself —
+ * there is no base stylesheet behind it.
+ *
+ * Colours come from projectsincluded.net: #0a0b0b page, #1976d2 accent, #a1a4ac secondary text.
+ * The logo (public/img/pi_logo.png) is a WHITE mark on transparency, so this theme must stay
+ * dark — on a light background it disappears.
+ */
+
+:root {
+    --pi-bg: #0a0b0b;
+    --pi-border: rgba(255, 255, 255, 0.1);
+    --pi-text: #ffffff;
+    --pi-muted: #a1a4ac;
+    --pi-accent: #1976d2;
+    --pi-accent-hover: #1e88e5;
+    --pi-accent-soft: rgba(25, 118, 210, 0.18);
+    --pi-link: #64b5f6;
+    --pi-danger: #ef5350;
+    --pi-success: #66bb6a;
+    --pi-warning: #ffa726;
+    --pi-radius: 12px;
+}
+
+html.pi-html {
+    height: 100%;
+    background: var(--pi-bg);
+}
+
+body.pi-body {
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 40px;
+    background:
+        radial-gradient(1100px 600px at 50% -12%, rgba(25, 118, 210, 0.16), transparent 62%),
+        radial-gradient(760px 420px at 92% 112%, rgba(25, 118, 210, 0.08), transparent 60%),
+        var(--pi-bg);
+    color: var(--pi-text);
+    font-family:
+        "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Keycloakify mounts the app into <div id="root"> (Keycloak's own FTL does too). That div is the
+ * flex item of body, and with `align-items: center` it shrink-wraps to its content — which makes
+ * .pi-shell's `width: 100%` resolve against a content-sized parent, so the 404px max-width is never
+ * reached and the card renders ~280px wide. Making #root full-width fixes the whole chain. */
+#root {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* flex + align-items:center, NOT grid + place-items:center — the grid version shrink-wraps the
+ * item, which silently ignored the 404px max-width and rendered a 270px card. */
+.pi-shell {
+    width: 100%;
+    max-width: 404px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* ---- header: the logo is the only branding above the card ------------------ */
+
+.pi-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.pi-logo {
+    display: block;
+    width: 128px;
+    height: auto;
+    /* No drop-shadow: the mark is pure white and a coloured glow tinted its edges. */
+}
+
+.pi-subtitle {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pi-muted);
+}
+
+/* ---- the card ------------------------------------------------------------- */
+
+.pi-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+    border: 1px solid var(--pi-border);
+    border-radius: var(--pi-radius);
+    padding: 26px 26px 24px;
+    box-shadow:
+        0 24px 60px -22px rgba(0, 0, 0, 0.95),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.pi-card-header {
+    margin-bottom: 18px;
+}
+
+.pi-title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--pi-text);
+}
+
+.pi-username {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--pi-muted);
+    flex-wrap: wrap;
+}
+
+.pi-username strong {
+    color: var(--pi-text);
+    font-weight: 600;
+}
+
+/* ---- messages ------------------------------------------------------------- */
+
+.pi-alert {
+    border-radius: 9px;
+    padding: 11px 13px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    margin-bottom: 16px;
+    border: 1px solid transparent;
+}
+
+.pi-alert-error {
+    background: rgba(239, 83, 80, 0.1);
+    border-color: rgba(239, 83, 80, 0.35);
+    color: #ffb4b2;
+}
+
+.pi-alert-warning {
+    background: rgba(255, 167, 38, 0.1);
+    border-color: rgba(255, 167, 38, 0.35);
+    color: #ffd08a;
+}
+
+.pi-alert-success {
+    background: rgba(102, 187, 106, 0.1);
+    border-color: rgba(102, 187, 106, 0.35);
+    color: #a5d6a7;
+}
+
+.pi-alert-info {
+    background: rgba(25, 118, 210, 0.1);
+    border-color: rgba(25, 118, 210, 0.35);
+    color: #90caf9;
+}
+
+.pi-required {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: var(--pi-muted);
+}
+
+.pi-required span {
+    color: var(--pi-danger);
+}
+
+/* ---- form ---------------------------------------------------------------
+ * Keycloakify renders the page bodies with empty class names (doUseDefaultCss={false}),
+ * so these selectors lean on the stable ids Keycloak's own templates emit: #kc-form-login,
+ * #username, #password, #kc-login, #kc-form-options, #input-error.
+ */
+
+form {
+    margin: 0;
+}
+
+#kc-form-login > div,
+#kc-form > div {
+    margin-bottom: 14px;
+}
+
+/* the password field wrapper adds a nested div; keep the spacing even */
+#kc-form-login div > div.kc-password-wrapper {
+    margin: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--pi-muted);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 11px 13px;
+    font: inherit;
+    font-size: 14.5px;
+    color: var(--pi-text);
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--pi-border);
+    border-radius: 9px;
+    outline: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+input[type="text"]:hover,
+input[type="password"]:hover,
+input[type="email"]:hover,
+select:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+select:focus {
+    border-color: var(--pi-accent);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px var(--pi-accent-soft);
+}
+
+input::placeholder {
+    color: #6b7078;
+}
+
+input[type="text"][aria-invalid="true"],
+input[type="password"][aria-invalid="true"],
+input[type="text"].pf-m-error,
+input[type="password"].pf-m-error {
+    border-color: rgba(239, 83, 80, 0.6);
+}
+
+/* ---- buttons -------------------------------------------------------------- */
+
+input[type="submit"],
+button[type="submit"],
+#kc-login {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 16px;
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 650;
+    color: #fff;
+    background: var(--pi-accent);
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px -10px rgba(25, 118, 210, 0.9);
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.06s ease;
+}
+
+input[type="submit"]:hover,
+button[type="submit"]:hover,
+#kc-login:hover {
+    background: var(--pi-accent-hover);
+    box-shadow: 0 12px 26px -10px rgba(25, 118, 210, 1);
+}
+
+input[type="submit"]:active,
+button[type="submit"]:active,
+#kc-login:active {
+    transform: translateY(1px);
+}
+
+input[type="submit"]:focus-visible,
+button[type="submit"]:focus-visible,
+#kc-login:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pi-accent-soft), 0 10px 22px -10px rgba(25, 118, 210, 0.9);
+}
+
+/* the "show password" eye button must not inherit the primary-button styling */
+.kc-password-wrapper button,
+button[aria-label] {
+    width: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: var(--pi-muted);
+    cursor: pointer;
+    padding: 6px;
+}
+
+/* ---- options row --------------------------------------------------------- */
+
+#kc-form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    margin: 2px 0 8px;
+}
+
+/* the submit row: no extra margin, the button already ends the form */
+#kc-form-buttons {
+    margin: 12px 0 0;
+}
+
+#kc-form-options label,
+label[for="rememberMe"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--pi-muted);
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--pi-accent);
+    cursor: pointer;
+}
+
+/* ---- links and footer ---------------------------------------------------- */
+
+a {
+    color: var(--pi-link);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover {
+    color: #90caf9;
+    text-decoration: underline;
+}
+
+#kc-registration-container,
+.pi-info {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--pi-border);
+    font-size: 13px;
+    color: var(--pi-muted);
+    text-align: center;
+}
+
+#input-error,
+.pi-error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--pi-danger);
+}
+
+/* social providers: keep them readable, we render none today */
+#kc-social-providers ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+/* ---- locale switcher (only rendered when the realm has >1 language) ------ */
+
+.pi-locale {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.pi-locale select {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+/* small screens */
+@media (max-width: 420px) {
+    .pi-card {
+        padding: 22px 18px 20px;
+    }
+
+    .pi-logo {
+        width: 104px;
+    }
+}

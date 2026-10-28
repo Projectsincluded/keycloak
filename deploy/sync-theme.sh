@@ -40,6 +40,7 @@ rsync -a --delete \
     --exclude 'dist_keycloak' \
     --exclude '.git' \
     --exclude '.github' \
+    --exclude '.keycloakify' \
     --exclude 'public/keycloakify-dev-resources' \
     "$SRC"/ "$DST"/
 

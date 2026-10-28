@@ -3,27 +3,43 @@
  *
  * Self-contained on purpose: `doUseDefaultCss={false}` in KcPage.tsx means Keycloakify's
  * PatternFly stylesheet is NOT loaded, so nothing here fights an inherited framework and the
- * bundle stays small. That also means every rule below has to cover its element itself —
- * there is no base stylesheet behind it.
+ * bundle stays small. That also means every rule below has to cover its element itself.
  *
- * Colours come from projectsincluded.net: #0a0b0b page, #1976d2 accent, #a1a4ac secondary text.
- * The logo (public/img/pi_logo.png) is a WHITE mark on transparency, so this theme must stay
- * dark — on a light background it disappears.
+ * Brand: projectsincluded.net — near-black page, #1976d2 accent, #a1a4ac secondary text. The logo
+ * (public/img/pi_logo.png) is a WHITE mark on transparency, so this theme has to stay dark.
+ *
+ * Layout rule that keeps biting: #root (Keycloak) and #storybook-root must both be full width,
+ * otherwise the flex column shrink-wraps and .pi-shell's max-width is never reached.
  */
 
 :root {
-    --pi-bg: #0a0b0b;
-    --pi-border: rgba(255, 255, 255, 0.1);
-    --pi-text: #ffffff;
-    --pi-muted: #a1a4ac;
+    --pi-bg: #08090b;
+    --pi-surface: #101216;
+    --pi-surface-2: #16191e;
+    --pi-border: rgba(255, 255, 255, 0.075);
+    --pi-border-strong: rgba(255, 255, 255, 0.14);
+    --pi-text: #f4f6f8;
+    --pi-muted: #98a0ab;
     --pi-accent: #1976d2;
-    --pi-accent-hover: #1e88e5;
-    --pi-accent-soft: rgba(25, 118, 210, 0.18);
-    --pi-link: #64b5f6;
-    --pi-danger: #ef5350;
-    --pi-success: #66bb6a;
-    --pi-warning: #ffa726;
-    --pi-radius: 12px;
+    --pi-accent-hover: #2385e6;
+    --pi-accent-soft: rgba(25, 118, 210, 0.22);
+    --pi-link: #6bb8ff;
+    --pi-danger: #f2555a;
+    --pi-danger-soft: rgba(242, 85, 90, 0.12);
+    --pi-success: #4fbf6b;
+    --pi-warning: #f0a132;
+    --pi-radius: 14px;
+    --pi-radius-sm: 10px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+::selection {
+    background: var(--pi-accent-soft);
 }
 
 html.pi-html {
@@ -32,17 +48,17 @@ html.pi-html {
 }
 
 body.pi-body {
-    box-sizing: border-box;
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 20px 40px;
+    padding: 40px 20px 48px;
     background:
-        radial-gradient(1100px 600px at 50% -12%, rgba(25, 118, 210, 0.16), transparent 62%),
-        radial-gradient(760px 420px at 92% 112%, rgba(25, 118, 210, 0.08), transparent 60%),
+        radial-gradient(900px 520px at 50% -10%, rgba(25, 118, 210, 0.18), transparent 62%),
+        radial-gradient(700px 420px at 88% 108%, rgba(25, 118, 210, 0.1), transparent 60%),
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.045) 1px, transparent 0) 0 0 / 22px 22px,
         var(--pi-bg);
     color: var(--pi-text);
     font-family:
@@ -53,10 +69,6 @@ body.pi-body {
     text-rendering: optimizeLegibility;
 }
 
-/* Keycloakify mounts the app into <div id="root"> (Keycloak's own FTL does too). That div is the
- * flex item of body, and with `align-items: center` it shrink-wraps to its content — which makes
- * .pi-shell's `width: 100%` resolve against a content-sized parent, so the 404px max-width is never
- * reached and the card renders ~280px wide. Making #root full-width fixes the whole chain. */
 #root {
     width: 100%;
     display: flex;
@@ -64,61 +76,67 @@ body.pi-body {
     align-items: center;
 }
 
-/* flex + align-items:center, NOT grid + place-items:center — the grid version shrink-wraps the
- * item, which silently ignored the 404px max-width and rendered a 270px card. */
+/* ---- shell ---------------------------------------------------------------- */
+
 .pi-shell {
     width: 100%;
-    max-width: 404px;
+    max-width: 420px;
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 24px;
 }
 
-/* ---- header: the logo is the only branding above the card ------------------ */
+/* ---- header --------------------------------------------------------------- */
 
 .pi-header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .pi-logo {
     display: block;
-    width: 128px;
+    width: 112px;
     height: auto;
-    /* No drop-shadow: the mark is pure white and a coloured glow tinted its edges. */
 }
 
 .pi-subtitle {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--pi-muted);
 }
 
-/* ---- the card ------------------------------------------------------------- */
+/* ---- card ----------------------------------------------------------------- */
 
 .pi-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+    position: relative;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+    background-color: var(--pi-surface);
     border: 1px solid var(--pi-border);
     border-radius: var(--pi-radius);
-    padding: 26px 26px 24px;
+    padding: 28px 28px 26px;
     box-shadow:
-        0 24px 60px -22px rgba(0, 0, 0, 0.95),
-        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+        0 32px 80px -32px rgba(0, 0, 0, 0.95),
+        0 2px 8px -2px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .pi-card-header {
-    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
 }
 
 .pi-title {
     margin: 0;
-    font-size: 19px;
+    font-size: 21px;
+    line-height: 1.25;
     font-weight: 650;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     color: var(--pi-text);
 }
 
@@ -126,9 +144,9 @@ body.pi-body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
     font-size: 13.5px;
     color: var(--pi-muted);
-    flex-wrap: wrap;
 }
 
 .pi-username strong {
@@ -136,43 +154,56 @@ body.pi-body {
     font-weight: 600;
 }
 
-/* ---- messages ------------------------------------------------------------- */
+/* ---- messages -------------------------------------------------------------- */
 
 .pi-alert {
-    border-radius: 9px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
     padding: 11px 13px;
+    margin-bottom: 18px;
+    border: 1px solid transparent;
+    border-radius: var(--pi-radius-sm);
     font-size: 13.5px;
     line-height: 1.45;
-    margin-bottom: 16px;
-    border: 1px solid transparent;
+}
+
+.pi-alert::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: currentColor;
 }
 
 .pi-alert-error {
-    background: rgba(239, 83, 80, 0.1);
-    border-color: rgba(239, 83, 80, 0.35);
-    color: #ffb4b2;
+    background: var(--pi-danger-soft);
+    border-color: rgba(242, 85, 90, 0.32);
+    color: #ffb4b6;
 }
 
 .pi-alert-warning {
-    background: rgba(255, 167, 38, 0.1);
-    border-color: rgba(255, 167, 38, 0.35);
+    background: rgba(240, 161, 50, 0.1);
+    border-color: rgba(240, 161, 50, 0.32);
     color: #ffd08a;
 }
 
 .pi-alert-success {
-    background: rgba(102, 187, 106, 0.1);
-    border-color: rgba(102, 187, 106, 0.35);
+    background: rgba(79, 191, 107, 0.1);
+    border-color: rgba(79, 191, 107, 0.32);
     color: #a5d6a7;
 }
 
 .pi-alert-info {
     background: rgba(25, 118, 210, 0.1);
-    border-color: rgba(25, 118, 210, 0.35);
+    border-color: rgba(25, 118, 210, 0.32);
     color: #90caf9;
 }
 
 .pi-required {
-    margin: 0 0 14px;
+    margin: 0 0 16px;
     font-size: 12.5px;
     color: var(--pi-muted);
 }
@@ -181,23 +212,12 @@ body.pi-body {
     color: var(--pi-danger);
 }
 
-/* ---- form ---------------------------------------------------------------
- * Keycloakify renders the page bodies with empty class names (doUseDefaultCss={false}),
- * so these selectors lean on the stable ids Keycloak's own templates emit: #kc-form-login,
- * #username, #password, #kc-login, #kc-form-options, #input-error.
- */
+/* ---- form ------------------------------------------------------------------
+ * Page bodies are rendered with empty class names (doUseDefaultCss={false}), so these selectors
+ * lean on the stable ids Keycloak's own templates emit: #kc-form-login, #username, #password,
+ * #kc-login, #kc-form-options, #input-error. */
 
 form {
-    margin: 0;
-}
-
-#kc-form-login > div,
-#kc-form > div {
-    margin-bottom: 14px;
-}
-
-/* the password field wrapper adds a nested div; keep the spacing even */
-#kc-form-login div > div.kc-password-wrapper {
     margin: 0;
 }
 
@@ -206,6 +226,7 @@ label {
     margin-bottom: 7px;
     font-size: 12.5px;
     font-weight: 600;
+    letter-spacing: 0.01em;
     color: var(--pi-muted);
 }
 
@@ -214,16 +235,18 @@ input[type="password"],
 input[type="email"],
 input[type="number"],
 input[type="tel"],
-select {
-    box-sizing: border-box;
+input[type="url"],
+select,
+textarea {
     width: 100%;
-    padding: 11px 13px;
+    min-height: 46px;
+    padding: 11px 14px;
     font: inherit;
     font-size: 14.5px;
     color: var(--pi-text);
-    background: rgba(255, 255, 255, 0.045);
+    background: rgba(255, 255, 255, 0.035);
     border: 1px solid var(--pi-border);
-    border-radius: 9px;
+    border-radius: var(--pi-radius-sm);
     outline: none;
     transition:
         border-color 0.15s ease,
@@ -231,52 +254,127 @@ select {
         background 0.15s ease;
 }
 
-input[type="text"]:hover,
-input[type="password"]:hover,
-input[type="email"]:hover,
+input:hover,
 select:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--pi-border-strong);
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus,
-select:focus {
+input:focus,
+select:focus,
+textarea:focus {
     border-color: var(--pi-accent);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 0 3px var(--pi-accent-soft);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 4px var(--pi-accent-soft);
 }
 
 input::placeholder {
-    color: #6b7078;
+    color: #666d78;
 }
 
-input[type="text"][aria-invalid="true"],
-input[type="password"][aria-invalid="true"],
-input[type="text"].pf-m-error,
-input[type="password"].pf-m-error {
-    border-color: rgba(239, 83, 80, 0.6);
+input[aria-invalid="true"],
+input.pf-m-error {
+    border-color: rgba(242, 85, 90, 0.65);
+    box-shadow: 0 0 0 4px rgba(242, 85, 90, 0.12);
 }
 
-/* ---- buttons -------------------------------------------------------------- */
+/* `doUseDefaultCss={false}` makes `kcClsx()` return EMPTY strings, so no `pf-c-*` or `form-group`
+ * class exists in the DOM — only ids (`#username`, `#password`, `#kc-login`) and element types.
+ * These rules are therefore structural. The reveal-password button is the only <button> inside the
+ * password field's wrapper <div>, and `:has()` is what makes the wrapper positionable. */
+/* Every page's form group is a plain <div>; the ids differ per page (login.ftl vs
+ * login-update-password.ftl vs login-otp.ftl), so this has to be structural. */
+form > div {
+    margin-bottom: 18px;
+}
+
+div:has(> input[type="password"]) {
+    position: relative;
+}
+
+div:has(> input[type="password"]) > input {
+    padding-right: 48px;
+}
+
+div:has(> input[type="password"]) > button {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-height: 0;
+    padding: 0;
+    color: var(--pi-muted);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+div:has(> input[type="password"]) > button:hover {
+    color: var(--pi-text);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* The <i> inside the reveal button also has an EMPTY class list, so `[class*="fa-eye"]` never
+ * matches. The state is read from the input instead: Keycloakify toggles it password <-> text. */
+div:has(> input[type="password"]) > button i,
+#kc-form-login div:has(> input[type="text"]) > button i {
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px 18px;
+}
+
+div:has(> input[type="password"]) > button i {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a0ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z'/><circle cx='12' cy='12' r='3.2'/></svg>");
+}
+
+#kc-form-login div:has(> input[type="text"]) > button i {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a0ab' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3l18 18'/><path d='M10.6 6.1A9.9 9.9 0 0 1 12 6c6.6 0 10.2 6 10.2 6a17 17 0 0 1-2.4 3.1M6.3 7.8A17 17 0 0 0 1.8 12S5.4 18 12 18a10 10 0 0 0 4.2-.9'/><path d='M9.9 9.9a3.2 3.2 0 0 0 4.4 4.4'/></svg>");
+}
+
+/* The WebAuthn button is emitted unconditionally and revealed by Keycloakify's script only when a
+ * passkey is usable. Keycloak's own theme hides it the same way; without this it renders as an
+ * empty box between the password field and "Remember me". */
+#authenticateWebAuthnButton {
+    display: none;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 4px;
+}
+
+/* ---- buttons --------------------------------------------------------------- */
 
 input[type="submit"],
 button[type="submit"],
 #kc-login {
-    box-sizing: border-box;
     width: 100%;
+    min-height: 46px;
     padding: 12px 16px;
     font: inherit;
     font-size: 14.5px;
     font-weight: 650;
+    letter-spacing: 0.01em;
     color: #fff;
-    background: var(--pi-accent);
-    border: 0;
-    border-radius: 9px;
+    background: linear-gradient(180deg, var(--pi-accent-hover), var(--pi-accent));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--pi-radius-sm);
     cursor: pointer;
-    box-shadow: 0 10px 22px -10px rgba(25, 118, 210, 0.9);
+    box-shadow:
+        0 12px 24px -12px rgba(25, 118, 210, 0.95),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
     transition:
-        background 0.15s ease,
+        filter 0.15s ease,
         box-shadow 0.15s ease,
         transform 0.06s ease;
 }
@@ -284,8 +382,10 @@ button[type="submit"],
 input[type="submit"]:hover,
 button[type="submit"]:hover,
 #kc-login:hover {
-    background: var(--pi-accent-hover);
-    box-shadow: 0 12px 26px -10px rgba(25, 118, 210, 1);
+    filter: brightness(1.08);
+    box-shadow:
+        0 14px 28px -12px rgba(25, 118, 210, 1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 input[type="submit"]:active,
@@ -298,22 +398,59 @@ input[type="submit"]:focus-visible,
 button[type="submit"]:focus-visible,
 #kc-login:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px var(--pi-accent-soft), 0 10px 22px -10px rgba(25, 118, 210, 0.9);
+    box-shadow:
+        0 0 0 4px var(--pi-accent-soft),
+        0 12px 24px -12px rgba(25, 118, 210, 0.95);
 }
 
-/* the "show password" eye button must not inherit the primary-button styling */
-.kc-password-wrapper button,
-button[aria-label] {
-    width: auto;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    color: var(--pi-muted);
+input[type="submit"][disabled],
+#kc-login:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* secondary buttons (cancel in app-initiated actions, OTP resend, ...) */
+input[type="button"],
+.btn-secondary,
+#kc-cancel,
+#kc-reset-password {
+    min-height: 44px;
+    padding: 11px 16px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pi-text);
+    background: var(--pi-surface-2);
+    border: 1px solid var(--pi-border);
+    border-radius: var(--pi-radius-sm);
     cursor: pointer;
-    padding: 6px;
 }
 
-/* ---- options row --------------------------------------------------------- */
+input[type="button"]:hover,
+.btn-secondary:hover,
+#kc-cancel:hover {
+    border-color: var(--pi-border-strong);
+}
+
+/* ---- options row ----------------------------------------------------------- */
+
+/* The options group and the forgot-password wrapper are two sibling <div>s, so the row is made
+ * flex on their common parent (ids are all we have). Scoped to the login form and to parents that
+ * do NOT also hold #kc-form-buttons: on login.ftl those are siblings too, while on login-otp.ftl
+ * the options and the submit button share a parent, and flex there shrinks the button to its text. */
+#kc-form-login div:has(> #kc-form-options):not(:has(> #kc-form-buttons)) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+#kc-form-login div:has(> #kc-form-options):not(:has(> #kc-form-buttons)) > div:last-child {
+    margin: 0;
+    text-align: right;
+    font-size: 13px;
+}
 
 #kc-form-options {
     display: flex;
@@ -321,20 +458,23 @@ button[aria-label] {
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    margin: 4px 0 2px;
     font-size: 13px;
-    margin: 2px 0 8px;
 }
 
-/* the submit row: no extra margin, the button already ends the form */
+#kc-form-options:empty {
+    display: none;
+}
+
 #kc-form-buttons {
-    margin: 12px 0 0;
+    margin: 18px 0 0;
 }
 
 #kc-form-options label,
 label[for="rememberMe"] {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     margin: 0;
     font-size: 13px;
     font-weight: 500;
@@ -342,14 +482,17 @@ label[for="rememberMe"] {
     cursor: pointer;
 }
 
-input[type="checkbox"] {
-    width: 15px;
-    height: 15px;
+input[type="checkbox"],
+input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
     accent-color: var(--pi-accent);
     cursor: pointer;
 }
 
-/* ---- links and footer ---------------------------------------------------- */
+/* "forgot password" sits on its own line under the submit button, Keywind-style */
+/* ---- links and footer ------------------------------------------------------ */
 
 a {
     color: var(--pi-link);
@@ -358,14 +501,17 @@ a {
 }
 
 a:hover {
-    color: #90caf9;
+    color: #a5d4ff;
     text-decoration: underline;
 }
 
 #kc-registration-container,
-.pi-info {
-    margin-top: 14px;
-    padding-top: 14px;
+.pf-c-form__group.pf-m-action + div,
+.pf-v5-c-form__group.pf-m-action + div,
+.pf-c-login__main-footer,
+.pf-v5-c-login__main-footer {
+    margin-top: 20px;
+    padding-top: 18px;
     border-top: 1px solid var(--pi-border);
     font-size: 13px;
     color: var(--pi-muted);
@@ -373,42 +519,150 @@ a:hover {
 }
 
 #input-error,
-.pi-error {
-    margin-top: 6px;
-    font-size: 13px;
+.pf-c-form__helper-text.pf-m-error,
+.pf-v5-c-form__helper-text.pf-m-error {
+    display: block;
+    margin-top: 7px;
+    font-size: 12.5px;
     color: var(--pi-danger);
 }
 
-/* social providers: keep them readable, we render none today */
-#kc-social-providers ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.pf-c-helper-text,
+.pf-v5-c-helper-text {
+    margin-top: 7px;
+    font-size: 12.5px;
+    color: var(--pi-muted);
+}
+
+.pf-c-alert,
+.pf-v5-c-alert {
+    margin-bottom: 18px;
+}
+
+/* ---- social providers ------------------------------------------------------ */
+
+.pi-social {
+    margin-top: 22px;
+}
+
+.pi-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: var(--pi-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.pi-divider::before,
+.pi-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--pi-border-strong), transparent);
+}
+
+.pi-social-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
     gap: 10px;
 }
 
-/* ---- locale switcher (only rendered when the realm has >1 language) ------ */
+.pi-social-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+.pi-social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 0 14px;
+    color: var(--pi-text);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--pi-surface-2);
+    border: 1px solid var(--pi-border);
+    border-radius: var(--pi-radius-sm);
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.06s ease;
+}
+
+.pi-social-button:hover {
+    color: var(--pi-text);
+    text-decoration: none;
+    background: #1b1f25;
+    border-color: var(--pi-border-strong);
+}
+
+.pi-social-button:active {
+    transform: translateY(1px);
+}
+
+.pi-social-button:focus-visible {
+    outline: none;
+    border-color: var(--pi-accent);
+    box-shadow: 0 0 0 4px var(--pi-accent-soft);
+}
+
+.pi-social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+}
+
+.pi-social-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- locale switcher (only rendered when the realm has >1 language) -------- */
 
 .pi-locale {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .pi-locale select {
     width: auto;
-    padding: 6px 10px;
-    font-size: 13px;
+    min-height: 34px;
+    padding: 5px 10px;
+    font-size: 12.5px;
+    color: var(--pi-muted);
+    background: transparent;
+    border-color: var(--pi-border);
 }
 
-/* small screens */
-@media (max-width: 420px) {
+/* ---- small screens --------------------------------------------------------- */
+
+@media (max-width: 440px) {
     .pi-card {
-        padding: 22px 18px 20px;
+        padding: 24px 20px 22px;
     }
 
     .pi-logo {
-        width: 104px;
+        width: 96px;
+    }
+
+    .pi-social-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
     }
 }

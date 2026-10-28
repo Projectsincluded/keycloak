@@ -377,3 +377,21 @@ export const WithAuthPassKey: Story = {
         />
     )
 };
+
+/** The realistic case: a couple of IdPs plus an unknown one, which must fall back to the globe. */
+export const WithThreeProviders: Story = {
+    render: () => (
+        <KcPageStory
+            kcContext={{
+                social: {
+                    displayInfo: false,
+                    providers: [
+                        { loginUrl: "#", alias: "google", providerId: "google", displayName: "Google", iconClasses: "fa fa-google" },
+                        { loginUrl: "#", alias: "microsoft", providerId: "microsoft", displayName: "Microsoft", iconClasses: "fa fa-windows" },
+                        { loginUrl: "#", alias: "company-sso", providerId: "oidc", displayName: "Company SSO" }
+                    ]
+                }
+            }}
+        />
+    )
+};

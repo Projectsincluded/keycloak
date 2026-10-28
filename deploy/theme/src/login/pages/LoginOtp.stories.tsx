@@ -29,9 +29,9 @@ export const WithInvalidCode: Story = {
                 },
                 messagesPerField: {
                     existsError: (fieldName: string, ...otherFieldNames: string[]) =>
-                        [fieldName, ...otherFieldNames].includes("otp"),
+                        [fieldName, ...otherFieldNames].includes("totp"),
                     get: (fieldName: string) =>
-                        fieldName === "otp" ? "Invalid authenticator code." : ""
+                        fieldName === "totp" ? "Invalid authenticator code." : ""
                 }
             }}
         />
